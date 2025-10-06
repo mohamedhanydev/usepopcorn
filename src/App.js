@@ -51,13 +51,17 @@ const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 export default function App() {
-  const [query, setQuery] = useState("");
   const [movies, setMovies] = useState(tempMovieData);
   const [watched, setWatched] = useState(tempWatchedData);
+  const [query, setQuery] = useState("");
 
   return (
     <>
-      <Navbar query={query} setQuery={setQuery} movies={movies} />
+      <Navbar>
+        <Logo />
+        <Search query={query} setQuery={setQuery} />
+        <Results movies={movies} />
+      </Navbar>
       <MainContent>
         <Box>
           <MoviesList movies={movies} />
@@ -70,24 +74,33 @@ export default function App() {
     </>
   );
 }
-function Navbar({ query, setQuery }) {
+function Navbar({ children }) {
+  return <nav className="nav-bar">{children}</nav>;
+}
+function Logo() {
   return (
-    <nav className="nav-bar">
-      <div className="logo">
-        <span role="img">🍿</span>
-        <h1>usePopcorn</h1>
-      </div>
-      <input
-        className="search"
-        type="text"
-        placeholder="Search movies..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
-      <p className="num-results">
-        Found <strong>{movies.length}</strong> results
-      </p>
-    </nav>
+    <div className="logo">
+      <span role="img">🍿</span>
+      <h1>usePopcorn</h1>
+    </div>
+  );
+}
+function Search({ query, setQuery }) {
+  return (
+    <input
+      className="search"
+      type="text"
+      placeholder="Search movies..."
+      value={query}
+      onChange={(e) => setQuery(e.target.value)}
+    />
+  );
+}
+function Results({ movies }) {
+  return (
+    <p className="num-results">
+      Found <strong>{movies.length}</strong> results
+    </p>
   );
 }
 function MainContent({ children }) {

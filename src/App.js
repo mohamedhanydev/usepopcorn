@@ -47,6 +47,126 @@ const tempWatchedData = [
   },
 ];
 
+const average = (arr) =>
+  arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
+
 export default function App() {
-  return <h1>Hello</h1>;
+  const [query, setQuery] = useState("");
+  const [movies, setMovies] = useState(tempMovieData);
+  const [watched, setWatched] = useState(tempWatchedData);
+
+  return (
+    <>
+      <Navbar query={query} setQuery={setQuery} movies={movies} />
+      <MainContent>
+        <Box>
+          <MoviesList movies={movies} />
+        </Box>
+        <Box>
+          <WatchedListSummary watched={watched} />
+          <WatchedListMovies watched={watched} />
+        </Box>
+      </MainContent>
+    </>
+  );
+}
+function Navbar({ query, setQuery }) {
+  return (
+    <nav className="nav-bar">
+      <div className="logo">
+        <span role="img">🍿</span>
+        <h1>usePopcorn</h1>
+      </div>
+      <input
+        className="search"
+        type="text"
+        placeholder="Search movies..."
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
+      <p className="num-results">
+        Found <strong>{movies.length}</strong> results
+      </p>
+    </nav>
+  );
+}
+function MainContent({ children }) {
+  return <main className="main">{children}</main>;
+}
+function Box({ children }) {
+  const [isOpen, setIsOpen] = useState(true);
+  return (
+    <div className="box">
+      <ToogleBtn setIsOpen={setIsOpen} open={isOpen} />
+      {isOpen && children}
+    </div>
+  );
+}
+function MoviesList({ movies }) {
+  return (
+    <ul className="list">
+      {movies?.map((movie) => (
+        <MovieItem movie={movie} key={movie.imdbID} />
+      ))}
+    </ul>
+  );
+}
+function ToogleBtn({ open, setIsOpen }) {
+  return (
+    <button className="btn-toggle" onClick={() => setIsOpen((open) => !open)}>
+      {open ? "–" : "+"}
+    </button>
+  );
+}
+function MovieItem({ movie }) {
+  return (
+    <li>
+      <img src={movie.Poster} alt={`${movie.Title} poster`} />
+      <h3>{movie.Title}</h3>
+      <div>
+        <InfoItem icon="🗓">{movie.Year}</InfoItem>
+      </div>
+    </li>
+  );
+}
+function InfoItem({ icon, children }) {
+  return (
+    <p>
+      <span>{icon}</span>
+      <span>{children}</span>
+    </p>
+  );
+}
+function WatchedListMovies({ watched }) {
+  return (
+    <ul className="list">
+      {watched.map((movie) => (
+        <li key={movie.imdbID}>
+          <img src={movie.Poster} alt={`${movie.Title} poster`} />
+          <h3>{movie.Title}</h3>
+          <div>
+            <InfoItem icon="⭐️">{movie.imdbRating}</InfoItem>
+            <InfoItem icon="🌟">{movie.userRating}</InfoItem>
+            <InfoItem icon="⏳">{movie.runtime} min</InfoItem>
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+function WatchedListSummary({ watched }) {
+  const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
+  const avgUserRating = average(watched.map((movie) => movie.userRating));
+  const avgRuntime = average(watched.map((movie) => movie.runtime));
+  return (
+    <div className="summary">
+      <h2>Movies you watched</h2>
+      <div>
+        <InfoItem icon="#️⃣">{watched.length} movies</InfoItem>
+        <InfoItem icon="⭐️">{avgImdbRating}</InfoItem>
+        <InfoItem icon="🌟">{avgUserRating}</InfoItem>
+        <InfoItem icon="⏳">{avgRuntime} min</InfoItem>
+      </div>
+    </div>
+  );
 }

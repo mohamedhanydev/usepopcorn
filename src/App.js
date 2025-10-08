@@ -55,18 +55,25 @@ export default function App() {
   const [watched, setWatched] = useState([]);
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       const res = await fetch(
-        `http://www.omdbapi.com/?apikey=${KEY}&s='harry potter'`
+        `http://www.omdbapi.com/?apikey=${KEY}&s='fsdajfoiawejio'`
       );
+      console.log(res);
+      if (!res.ok) throw new Error("fetching data failed...");
       const data = await res.json();
+      if (data.Response === "False") throw new Error("No Movies Found!");
       setMovies(data.Search);
-      setIsLoading(false);
     };
 
-    fetchData();
+    fetchData()
+      .catch((err) => {
+        setError(err.message);
+      })
+      .finally(() => setIsLoading(false));
 
     return () => {
       console.log("Component unmounted");
@@ -80,7 +87,15 @@ export default function App() {
         <Results movies={movies} />
       </Navbar>
       <MainContent>
-        <Box>{isLoading ? <Loader /> : <MoviesList movies={movies} />}</Box>
+        <Box>
+          {isLoading && !error ? (
+            <Loader />
+          ) : error ? (
+            <MessageError message={error} />
+          ) : (
+            <MoviesList movies={movies} />
+          )}
+        </Box>
         <Box>
           <WatchedListSummary watched={watched} />
           <WatchedListMovies watched={watched} />
@@ -88,6 +103,9 @@ export default function App() {
       </MainContent>
     </>
   );
+}
+function MessageError({ message }) {
+  return <p className="error">{message}</p>;
 }
 function Loader() {
   return <p className="loader">Loading...</p>;

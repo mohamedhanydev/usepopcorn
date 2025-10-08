@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const tempMovieData = [
   {
@@ -46,15 +46,32 @@ const tempWatchedData = [
     userRating: 9,
   },
 ];
-
+const KEY = "879206e0";
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 export default function App() {
-  const [movies, setMovies] = useState(tempMovieData);
-  const [watched, setWatched] = useState(tempWatchedData);
+  const [movies, setMovies] = useState([]);
+  const [watched, setWatched] = useState([]);
   const [query, setQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      const res = await fetch(
+        `http://www.omdbapi.com/?apikey=${KEY}&s='harry potter'`
+      );
+      const data = await res.json();
+      setMovies(data.Search);
+      setIsLoading(false);
+    };
 
+    fetchData();
+
+    return () => {
+      console.log("Component unmounted");
+    };
+  }, []);
   return (
     <>
       <Navbar>
@@ -63,9 +80,7 @@ export default function App() {
         <Results movies={movies} />
       </Navbar>
       <MainContent>
-        <Box>
-          <MoviesList movies={movies} />
-        </Box>
+        <Box>{isLoading ? <Loader /> : <MoviesList movies={movies} />}</Box>
         <Box>
           <WatchedListSummary watched={watched} />
           <WatchedListMovies watched={watched} />
@@ -73,6 +88,9 @@ export default function App() {
       </MainContent>
     </>
   );
+}
+function Loader() {
+  return <p className="loader">Loading...</p>;
 }
 function Navbar({ children }) {
   return <nav className="nav-bar">{children}</nav>;

@@ -8,7 +8,7 @@ const starStyle = {
   display: "block",
   cursor: "pointer",
 };
-export default function RatingStars() {
+export default function RatingStars({ setStarRating }) {
   const [starCount, setStarCount] = useState(0);
   const [tempStarCount, setTempStarCount] = useState(0);
   function handleHover(num) {
@@ -25,7 +25,10 @@ export default function RatingStars() {
             key={i}
             num={i + 1}
             starCount={tempStarCount}
-            onClick={() => setStarCount(i + 1)}
+            onClick={() => {
+              setStarCount(i + 1);
+              setStarRating(i + 1);
+            }}
             onMouseEnter={() => handleHover(i + 1)}
             onMouseLeave={() => handleLeave(i + 1)}
           />

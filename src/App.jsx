@@ -35,6 +35,7 @@ export default function App() {
       .catch((err) => setError(err.message))
       .finally(() => setIsLoading(false));
   }, [query]);
+  if (!selected) document.title = "usepopcorn";
   return (
     <>
       <Navbar>
@@ -94,7 +95,7 @@ function Details({
   }, [selected]);
 
   if (!movie) return null;
-
+  document.title = movie.Title;
   return (
     <>
       {isLoading ? (

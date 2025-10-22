@@ -15,6 +15,7 @@ async function fetchData(query, type = "s") {
   if (!res.ok) throw new Error("fetching data failed...");
   const data = await res.json();
   if (data.Response === "False") throw new Error("No Movies Found!");
+  console.log(data);
   if (type === "s") return data.Search;
   else return data;
 }
@@ -145,6 +146,8 @@ function Details({
               ) : null}
             </div>
             <TextExpander>{movie.Plot}</TextExpander>
+            <p>Starring {movie.Actors}</p>
+            <p>Directed by {movie.Director}</p>
           </section>
         </div>
       )}

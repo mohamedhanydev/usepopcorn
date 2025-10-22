@@ -28,6 +28,10 @@ export default function App() {
   const [error, setError] = useState("");
   const [selected, setSelected] = useState(null);
   useEffect(() => {
+    if (!query) {
+      setError("Start Searching For A Movie!");
+      return;
+    }
     setIsLoading(true);
     setError("");
     fetchData(query)
@@ -44,7 +48,7 @@ export default function App() {
         <Results movies={movies} />
       </Navbar>
       <MainContent>
-        <Box isLoading={isLoading} error={error}>
+        <Box isLoading={isLoading} error={error} query={query}>
           <MoviesList movies={movies} setSelected={setSelected} />
         </Box>
         <Box>
@@ -149,8 +153,8 @@ function Details({
     </>
   );
 }
-function MessageError({ message }) {
-  return <p className="error">⛔️ {message}</p>;
+function MessageError({ message, query }) {
+  return <p className="error">{query ? `⛔️ ${message}` : message}</p>;
 }
 function Loader() {
   // return <p className="loader">Loading...</p>;
@@ -194,7 +198,7 @@ function Results({ movies }) {
 function MainContent({ children }) {
   return <main className="main">{children}</main>;
 }
-function Box({ children, isLoading, error }) {
+function Box({ children, isLoading, error, query = "" }) {
   const [isOpen, setIsOpen] = useState(true);
   return (
     <div className="box">
@@ -203,7 +207,7 @@ function Box({ children, isLoading, error }) {
         (isLoading && !error ? (
           <Loader />
         ) : error ? (
-          <MessageError message={error} />
+          <MessageError message={error} query={query} />
         ) : (
           children
         ))}

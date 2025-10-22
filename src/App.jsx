@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import RatingStars from "./RatingStars";
-import TextExpander from "./TextExpander";
+import RatingStars from "./components/RatingStars";
+import TextExpander from "./components/TextExpander";
 
 const KEY = "879206e0";
 const average = (arr) => {
@@ -43,14 +43,8 @@ export default function App() {
         <Results movies={movies} />
       </Navbar>
       <MainContent>
-        <Box>
-          {isLoading && !error ? (
-            <Loader />
-          ) : error ? (
-            <MessageError message={error} />
-          ) : (
-            <MoviesList movies={movies} setSelected={setSelected} />
-          )}
+        <Box isLoading={isLoading} error={error}>
+          <MoviesList movies={movies} setSelected={setSelected} />
         </Box>
         <Box>
           {!selected ? (
@@ -192,12 +186,19 @@ function Results({ movies }) {
 function MainContent({ children }) {
   return <main className="main">{children}</main>;
 }
-function Box({ children }) {
+function Box({ children, isLoading, error }) {
   const [isOpen, setIsOpen] = useState(true);
   return (
     <div className="box">
       <ToogleBtn setIsOpen={setIsOpen} open={isOpen} />
-      {isOpen && children}
+      {isOpen &&
+        (isLoading && !error ? (
+          <Loader />
+        ) : error ? (
+          <MessageError message={error} />
+        ) : (
+          children
+        ))}
     </div>
   );
 }

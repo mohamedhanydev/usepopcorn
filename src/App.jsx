@@ -4,6 +4,7 @@ import TextExpander from "./components/TextExpander";
 
 const KEY = "879206e0";
 const average = (arr) => {
+  if (!arr.length) return 0;
   const res = arr.reduce((acc, cur, i, arr) => acc + cur, 0);
   return res / arr.length;
 };
@@ -39,13 +40,12 @@ export default function App() {
       .catch((err) => setError(err.message))
       .finally(() => setIsLoading(false));
   }, [query]);
-  if (!selected) document.title = "usepopcorn";
   return (
     <>
       <Navbar>
         <Logo />
         <Search query={query} setQuery={setQuery} />
-        <Results movies={movies} />
+        <Results count={movies.length} />
       </Navbar>
       <MainContent>
         <Box isLoading={isLoading} error={error} query={query}>
@@ -98,11 +98,16 @@ function Details({
     getMovieDetails();
   }, [selected]);
 
-  if (!movie) return null;
-  document.title = movie.Title;
+  useEffect(() => {
+    if (!movie) return;
+    document.title = movie.Title;
+    return () => {
+      document.title = "usepopcorn";
+    };
+  }, [movie]);
   return (
     <>
-      {isLoading ? (
+      {isLoading || !movie ? (
         <Loader />
       ) : (
         <div className="details">
@@ -188,10 +193,10 @@ function Search({ query, setQuery }) {
     />
   );
 }
-function Results({ movies }) {
+function Results({ count }) {
   return (
     <p className="num-results">
-      Found <strong>{movies.length}</strong> results
+      Found <strong>{count}</strong> results
     </p>
   );
 }
@@ -276,8 +281,12 @@ function WatchedListSummary({ watched }) {
       <div>
         <InfoItem icon="#️⃣">{watched.length} movies</InfoItem>
         <InfoItem icon="⭐️">{avgImdbRating.toFixed()}</InfoItem>
-        <InfoItem icon="🌟">{avgUserRating.toFixed(2)}</InfoItem>
-        <InfoItem icon="⏳">{avgRuntime.toFixed(2)} min</InfoItem>
+        <InfoItem icon="🌟">
+          {avgUserRating === 0 ? 0 : avgUserRating.toFixed(2)}
+        </InfoItem>
+        <InfoItem icon="⏳">
+          {avgRuntime === 0 ? 0 : avgRuntime.toFixed(2)} min
+        </InfoItem>
       </div>
     </div>
   );

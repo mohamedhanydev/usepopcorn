@@ -9,9 +9,10 @@ const average = (arr) => {
   return res / arr.length;
 };
 
-async function fetchData(query, type = "s") {
+async function fetchData(query, signal, type = "s") {
   const res = await fetch(
-    `https://www.omdbapi.com/?apikey=${KEY}&${type}=${query}`
+    `https://www.omdbapi.com/?apikey=${KEY}&${type}=${query}`,
+    { signal: signal }
   );
   if (!res.ok) throw new Error("fetching data failed...");
   const data = await res.json();
@@ -29,16 +30,22 @@ export default function App() {
   const [error, setError] = useState("");
   const [selected, setSelected] = useState(null);
   useEffect(() => {
+    const controller = new AbortController();
     if (!query) {
       setError("Start Searching For A Movie!");
       return;
     }
     setIsLoading(true);
     setError("");
-    fetchData(query)
+    fetchData(query, controller.signal)
       .then((data) => setMovies(data))
-      .catch((err) => setError(err.message))
+      .catch((err) => {
+        if (err.name !== "AbortError") setError(err.message);
+      })
       .finally(() => setIsLoading(false));
+    return function () {
+      controller.abort();
+    };
   }, [query]);
   return (
     <>
@@ -84,10 +91,11 @@ function Details({
   const [starRating, setStarRating] = useState(0);
   const found = watched.find((cur) => cur.imdbID === selected);
   useEffect(() => {
+    const controller = new AbortController();
     async function getMovieDetails() {
       setIsLoading(true);
       try {
-        const res = await fetchData(selected, "i");
+        const res = await fetchData(selected, controller.signal, "i");
         setMovie(res);
       } catch (err) {
         console.error(err);
@@ -96,6 +104,10 @@ function Details({
       }
     }
     getMovieDetails();
+    // return
+    return function () {
+      controller.abort();
+    };
   }, [selected]);
 
   useEffect(() => {

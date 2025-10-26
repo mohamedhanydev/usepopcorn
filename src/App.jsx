@@ -17,7 +17,6 @@ async function fetchData(query, signal, type = "s") {
   if (!res.ok) throw new Error("fetching data failed...");
   const data = await res.json();
   if (data.Response === "False") throw new Error("No Movies Found!");
-  console.log(data);
   if (type === "s") return data.Search;
   else return data;
 }
@@ -53,6 +52,7 @@ export default function App() {
       controller.abort();
     };
   }, [query]);
+
   return (
     <>
       <Navbar>
@@ -110,12 +110,22 @@ function Details({
       }
     }
     getMovieDetails();
-    // return
     return function () {
       controller.abort();
     };
   }, [selected]);
-
+  useEffect(
+    function () {
+      function handleKeyDown(e) {
+        if (e.code === "Escape") if (selected) setSelected(null);
+      }
+      document.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.removeEventListener("keydown", handleKeyDown);
+      };
+    },
+    [selected]
+  );
   useEffect(() => {
     if (!movie) return;
     document.title = movie.Title;
@@ -128,7 +138,14 @@ function Details({
       {isLoading || !movie ? (
         <Loader />
       ) : (
-        <div className="details">
+        <div
+          className="details"
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              setSelected(null);
+            }
+          }}
+        >
           <header>
             <button className="btn-back" onClick={() => setSelected(null)}>
               ←

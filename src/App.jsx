@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
-import RatingStars from "./components/RatingStars";
-import TextExpander from "./components/TextExpander";
+import Navbar from "./components/Navbar";
+import Logo from "./components/Logo";
+import Search from "./components/Search";
+import Results from "./components/Results";
+import MainContent from "./components/MainContent";
+import Box from "./components/Box";
+import MoviesList from "./components/MoviesList";
+import WatchedListSummary from "./components/WatchedListSummary";
+import WatchedListMovies from "./components/WatchedListMovies";
+import Details from "./components/Details";
 
 const KEY = "879206e0";
-const average = (arr) => {
-  if (!arr.length) return 0;
-  const res = arr.reduce((acc, cur, i, arr) => acc + cur, 0);
-  return res / arr.length;
-};
 
 async function fetchData(query, signal, type = "s") {
   const res = await fetch(
@@ -20,6 +23,7 @@ async function fetchData(query, signal, type = "s") {
   if (type === "s") return data.Search;
   else return data;
 }
+
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
@@ -28,6 +32,7 @@ export default function App() {
   const [isLoading2, setIsLoading2] = useState(false);
   const [error, setError] = useState("");
   const [selected, setSelected] = useState(null);
+
   useEffect(() => {
     const controller = new AbortController();
     if (!query) {
@@ -83,246 +88,5 @@ export default function App() {
         </Box>
       </MainContent>
     </>
-  );
-}
-function Details({
-  selected,
-  setWatched,
-  isLoading,
-  setSelected,
-  setIsLoading,
-  watched,
-}) {
-  const [movie, setMovie] = useState(null);
-  const [starRating, setStarRating] = useState(0);
-  const found = watched.find((cur) => cur.imdbID === selected);
-  useEffect(() => {
-    const controller = new AbortController();
-    async function getMovieDetails() {
-      setIsLoading(true);
-      try {
-        const res = await fetchData(selected, controller.signal, "i");
-        setMovie(res);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    getMovieDetails();
-    return function () {
-      controller.abort();
-    };
-  }, [selected]);
-  useEffect(
-    function () {
-      function handleKeyDown(e) {
-        if (e.code === "Escape") if (selected) setSelected(null);
-      }
-      document.addEventListener("keydown", handleKeyDown);
-      return () => {
-        document.removeEventListener("keydown", handleKeyDown);
-      };
-    },
-    [selected]
-  );
-  useEffect(() => {
-    if (!movie) return;
-    document.title = movie.Title;
-    return () => {
-      document.title = "usepopcorn";
-    };
-  }, [movie]);
-  return (
-    <>
-      {isLoading || !movie ? (
-        <Loader />
-      ) : (
-        <div
-          className="details"
-          onKeyDown={(e) => {
-            if (e.key === "Escape") {
-              setSelected(null);
-            }
-          }}
-        >
-          <header>
-            <button className="btn-back" onClick={() => setSelected(null)}>
-              ←
-            </button>
-            <img src={movie.Poster} alt={`Poster of ${movie.Title} movie`} />
-            <div className="details-overview">
-              <h2>{movie.Title}</h2>
-              <p>
-                {movie.Released} • {movie.Runtime}
-              </p>
-              <p>{movie.Genre}</p>
-              <p>
-                <span>⭐️</span>8.1 IMDb rating
-              </p>
-            </div>
-          </header>
-          <section>
-            <div className="rating">
-              {found ? (
-                `you have rated this movie by: ${found.userRating}`
-              ) : (
-                <RatingStars setStarRating={setStarRating} />
-              )}
-              {starRating > 0 && !found ? (
-                <button
-                  className="btn-add"
-                  onClick={() => {
-                    setWatched([
-                      ...watched,
-                      { ...movie, userRating: starRating },
-                    ]);
-                    setSelected(null);
-                  }}
-                >
-                  Add to List
-                </button>
-              ) : null}
-            </div>
-            <TextExpander>{movie.Plot}</TextExpander>
-            <p>Starring {movie.Actors}</p>
-            <p>Directed by {movie.Director}</p>
-          </section>
-        </div>
-      )}
-    </>
-  );
-}
-function MessageError({ message, query }) {
-  return <p className="error">{query ? `⛔️ ${message}` : message}</p>;
-}
-function Loader() {
-  // return <p className="loader">Loading...</p>;
-  const spinner = (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-      <path d="M11 2v4c0 0.552 0.448 1 1 1s1-0.448 1-1v-4c0-0.552-0.448-1-1-1s-1 0.448-1 1zM11 18v4c0 0.552 0.448 1 1 1s1-0.448 1-1v-4c0-0.552-0.448-1-1-1s-1 0.448-1 1zM4.223 5.637l2.83 2.83c0.391 0.391 1.024 0.391 1.414 0s0.391-1.024 0-1.414l-2.83-2.83c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414zM15.533 16.947l2.83 2.83c0.391 0.391 1.024 0.391 1.414 0s0.391-1.024 0-1.414l-2.83-2.83c-0.391-0.391-1.024-0.391-1.414 0s-0.391 1.024 0 1.414zM2 13h4c0.552 0 1-0.448 1-1s-0.448-1-1-1h-4c-0.552 0-1 0.448-1 1s0.448 1 1 1zM18 13h4c0.552 0 1-0.448 1-1s-0.448-1-1-1h-4c-0.552 0-1 0.448-1 1s0.448 1 1 1zM5.637 19.777l2.83-2.83c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-2.83 2.83c-0.391 0.391-0.391 1.024 0 1.414s1.024 0.391 1.414 0zM16.947 8.467l2.83-2.83c0.391-0.391 0.391-1.024 0-1.414s-1.024-0.391-1.414 0l-2.83 2.83c-0.391 0.391-0.391 1.024 0 1.414s1.024 0.391 1.414 0z"></path>
-    </svg>
-  );
-
-  return <div className="spinner">{spinner}</div>;
-}
-function Navbar({ children }) {
-  return <nav className="nav-bar">{children}</nav>;
-}
-function Logo() {
-  return (
-    <div className="logo">
-      <span role="img">🍿</span>
-      <h1>usePopcorn</h1>
-    </div>
-  );
-}
-function Search({ query, setQuery }) {
-  return (
-    <input
-      className="search"
-      type="text"
-      placeholder="Search movies..."
-      value={query}
-      onChange={(e) => setQuery(e.target.value)}
-    />
-  );
-}
-function Results({ count }) {
-  return (
-    <p className="num-results">
-      Found <strong>{count}</strong> results
-    </p>
-  );
-}
-function MainContent({ children }) {
-  return <main className="main">{children}</main>;
-}
-function Box({ children, isLoading, error, query = "" }) {
-  const [isOpen, setIsOpen] = useState(true);
-  return (
-    <div className="box">
-      <ToogleBtn setIsOpen={setIsOpen} open={isOpen} />
-      {isOpen &&
-        (isLoading && !error ? (
-          <Loader />
-        ) : error ? (
-          <MessageError message={error} query={query} />
-        ) : (
-          children
-        ))}
-    </div>
-  );
-}
-function MoviesList({ movies, setSelected }) {
-  return (
-    <ul className="list list-movies">
-      {movies?.map((movie) => (
-        <MovieItem movie={movie} setSelected={setSelected} key={movie.imdbID} />
-      ))}
-    </ul>
-  );
-}
-function ToogleBtn({ open, setIsOpen }) {
-  return (
-    <button className="btn-toggle" onClick={() => setIsOpen((open) => !open)}>
-      {open ? "–" : "+"}
-    </button>
-  );
-}
-function MovieItem({ movie, setSelected }) {
-  return (
-    <li id={movie.imdbID} onClick={() => setSelected(movie.imdbID)}>
-      <img src={movie.Poster} alt={`${movie.Title} poster`} />
-      <h3>{movie.Title}</h3>
-      <div>
-        <InfoItem icon="🗓">{movie.Year}</InfoItem>
-      </div>
-    </li>
-  );
-}
-function InfoItem({ icon, children }) {
-  return (
-    <p>
-      <span>{icon}</span>
-      <span>{children}</span>
-    </p>
-  );
-}
-function WatchedListMovies({ watched }) {
-  return (
-    <ul className="list">
-      {watched.map((movie) => (
-        <li key={movie.imdbID}>
-          <img src={movie.Poster} alt={`${movie.Title} poster`} />
-          <h3>{movie.Title}</h3>
-          <div>
-            <InfoItem icon="⭐️">{movie.imdbRating}</InfoItem>
-            <InfoItem icon="🌟">{movie.userRating}</InfoItem>
-            <InfoItem icon="⏳">{parseFloat(movie.Runtime)} min</InfoItem>
-          </div>
-        </li>
-      ))}
-    </ul>
-  );
-}
-function WatchedListSummary({ watched }) {
-  const avgImdbRating = average(watched.map((movie) => +movie.imdbRating));
-  const avgUserRating = average(watched.map((movie) => +movie.userRating));
-  const avgRuntime = average(watched.map((movie) => parseFloat(movie.Runtime)));
-  return (
-    <div className="summary">
-      <h2>Movies you watched</h2>
-      <div>
-        <InfoItem icon="#️⃣">{watched.length} movies</InfoItem>
-        <InfoItem icon="⭐️">{avgImdbRating.toFixed()}</InfoItem>
-        <InfoItem icon="🌟">
-          {avgUserRating === 0 ? 0 : avgUserRating.toFixed(2)}
-        </InfoItem>
-        <InfoItem icon="⏳">
-          {avgRuntime === 0 ? 0 : avgRuntime.toFixed(2)} min
-        </InfoItem>
-      </div>
-    </div>
   );
 }

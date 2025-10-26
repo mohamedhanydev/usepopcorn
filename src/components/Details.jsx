@@ -104,10 +104,15 @@ export default function Details({
                 <button
                   className="btn-add"
                   onClick={() => {
-                    setWatched([
+                    const newWatchedMovies = [
                       ...watched,
                       { ...movie, userRating: starRating },
-                    ]);
+                    ];
+                    setWatched(newWatchedMovies);
+                    localStorage.setItem(
+                      "watchedMovies",
+                      JSON.stringify(newWatchedMovies)
+                    );
                     setSelected(null);
                   }}
                 >

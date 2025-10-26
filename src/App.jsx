@@ -26,7 +26,9 @@ async function fetchData(query, signal, type = "s") {
 
 export default function App() {
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
+  const [watched, setWatched] = useState(
+    () => JSON.parse(localStorage.getItem("watchedMovies")) || []
+  );
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isLoading2, setIsLoading2] = useState(false);

@@ -38,7 +38,13 @@ export default function App() {
     setIsLoading(true);
     setError("");
     fetchData(query, controller.signal)
-      .then((data) => setMovies(data))
+      .then((data) => {
+        const uniqueMovies = new Map();
+        for (const movie of data) {
+          if (movie.imdbID) uniqueMovies.set(movie.imdbID, movie);
+        }
+        setMovies(Array.from(uniqueMovies.values()));
+      })
       .catch((err) => {
         if (err.name !== "AbortError") setError(err.message);
       })

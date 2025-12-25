@@ -39,6 +39,7 @@ export default function App() {
     const controller = new AbortController();
     if (!query) {
       setError("Start Searching For A Movie!");
+      setMovies([]);
       return;
     }
     setIsLoading(true);
@@ -52,7 +53,10 @@ export default function App() {
         setMovies(Array.from(uniqueMovies.values()));
       })
       .catch((err) => {
-        if (err.name !== "AbortError") setError(err.message);
+        if (err.name !== "AbortError") {
+          setError(err.message);
+          setMovies([]);
+        }
       })
       .finally(() => setIsLoading(false));
     return function () {

@@ -2,7 +2,6 @@
   "name": "usepopcorn",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://mohamedhanydev.github.io/usepopcorn",
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.8.0",

@@ -37,7 +37,7 @@ export default function App() {
 
   useEffect(() => {
     const controller = new AbortController();
-    if (!query) {
+    if (!query.trim()) {
       setError("Start Searching For A Movie!");
       setMovies([]);
       return;

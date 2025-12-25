@@ -1,4 +1,4 @@
-import InfoItem from "./InfoItem";
+import InfoItem from "./InfoItem.jsx";
 
 export default function MovieItem({ movie, setSelected }) {
   return (

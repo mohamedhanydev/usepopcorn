@@ -1,7 +1,7 @@
 import { useState } from "react";
-import ToogleBtn from "./ToogleBtn";
-import Loader from "./Loader";
-import MessageError from "./MessageError";
+import ToogleBtn from "./ToogleBtn.jsx";
+import Loader from "./Loader.jsx";
+import MessageError from "./MessageError.jsx";
 
 export default function Box({ children, isLoading, error, query = "" }) {
   const [isOpen, setIsOpen] = useState(true);

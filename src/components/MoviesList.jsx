@@ -1,4 +1,4 @@
-import MovieItem from "./MovieItem";
+import MovieItem from "./MovieItem.jsx";
 
 export default function MoviesList({ movies, setSelected }) {
   return (

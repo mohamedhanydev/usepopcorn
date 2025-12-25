@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import RatingStars from "./RatingStars";
-import TextExpander from "./TextExpander";
-import Loader from "./Loader";
+import RatingStars from "./RatingStars.jsx";
+import TextExpander from "./TextExpander.jsx";
+import Loader from "./Loader.jsx";
 
 async function fetchData(query, signal, type = "s") {
   const KEY = "879206e0";

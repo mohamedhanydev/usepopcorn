@@ -1,4 +1,4 @@
-import InfoItem from "./InfoItem";
+import InfoItem from "./InfoItem.jsx";
 
 const average = (arr) => {
   if (!arr.length) return 0;

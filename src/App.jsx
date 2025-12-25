@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
-import Navbar from "./components/Navbar";
-import Logo from "./components/Logo";
-import Search from "./components/Search";
-import Results from "./components/Results";
-import MainContent from "./components/MainContent";
-import Box from "./components/Box";
-import MoviesList from "./components/MoviesList";
-import WatchedListSummary from "./components/WatchedListSummary";
-import WatchedListMovies from "./components/WatchedListMovies";
-import Details from "./components/Details";
+import Navbar from "./components/Navbar.jsx";
+import Logo from "./components/Logo.jsx";
+import Search from "./components/Search.jsx";
+import Results from "./components/Results.jsx";
+import MainContent from "./components/MainContent.jsx";
+import Box from "./components/Box.jsx";
+import MoviesList from "./components/MoviesList.jsx";
+import WatchedListSummary from "./components/WatchedListSummary.jsx";
+import WatchedListMovies from "./components/WatchedListMovies.jsx";
+import Details from "./components/Details.jsx";
 
 const KEY = "879206e0";
 
